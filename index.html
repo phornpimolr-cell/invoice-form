@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบแจ้งหนี้ - TIP Import Export</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   SCREEN STYLES
+══════════════════════════════════════════ */
+:root{
+  --n:#0d2b4e; --n2:#1a4070; --b:#2a5f9e;
+  --pale:#e8f0fb; --gl:#f4f7fc; --gb:#c8d8ee;
+  --m:#3a5a82; --a:#f0a500; --g:#1a7f5a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Sarabun',sans-serif;
+  background:linear-gradient(135deg,#0d2b4e,#1a4070,#0d2b4e);
+  min-height:100vh; padding:28px 18px; color:#0d2b4e;
+}
+.wrap{max-width:920px;margin:0 auto;}
+.app-hdr{text-align:center;margin-bottom:24px;}
+.app-hdr h1{font-family:'Noto Serif Thai',serif;font-size:1.85rem;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);}
+.app-hdr p{color:rgba(255,255,255,.6);font-size:.88rem;margin-top:4px;}
+.card{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden;}
+/* toolbar */
+.bar{background:var(--n);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--a);flex-wrap:wrap;gap:10px;}
+.bar-t{color:#fff;font-size:.92rem;font-weight:600;}
+.bar-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;font-family:'Sarabun',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:.15s;white-space:nowrap;}
+.btn-clear{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.28);}
+.btn-clear:hover{background:rgba(255,255,255,.22);}
+.btn-pdf{background:var(--a);color:var(--n);font-size:.95rem;padding:9px 26px;letter-spacing:.3px;}
+.btn-pdf:hover{background:#dea000;transform:translateY(-1px);box-shadow:0 4px 14px rgba(240,165,0,.45);}
+.btn-drive{background:var(--g);color:#fff;}
+.btn-drive:hover{background:#15694a;transform:translateY(-1px);}
+/* form area */
+.fa{padding:24px 26px;}
+.doc{border:1.5px solid var(--gb);border-radius:12px;overflow:hidden;}
+/* doc header */
+.dh{background:var(--n);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:14px;}
+.co-name{font-family:'Noto Serif Thai',serif;font-size:1.28rem;font-weight:700;color:#fff;line-height:1.3;}
+.co-info{color:rgba(255,255,255,.68);font-size:.77rem;line-height:1.75;margin-top:5px;}
+.inv-badge{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.28);border-radius:9px;padding:9px 22px;text-align:center;flex-shrink:0;}
+.inv-badge-text{font-family:'Noto Serif Thai',serif;font-size:1.38rem;font-weight:700;color:#fff;line-height:1.4;}
+/* meta */
+.meta{background:var(--pale);border-bottom:1.5px solid var(--gb);padding:11px 24px;display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.mf{display:flex;flex-direction:column;gap:4px;}
+.ml{font-size:.69rem;font-weight:700;color:var(--b);text-transform:uppercase;letter-spacing:.7px;}
+/* customer */
+.cust{padding:13px 24px;border-bottom:1.5px solid var(--gb);display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.span2{grid-column:1/-1;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fl{font-size:.73rem;font-weight:700;color:var(--n2);letter-spacing:.3px;}
+/* inputs */
+input,textarea,select{
+  font-family:'Sarabun',sans-serif;font-size:.9rem;color:#0d2b4e;
+  border:1.5px solid var(--gb);border-radius:7px;padding:7px 11px;
+  background:var(--gl);transition:.18s;width:100%;
+}
+input:focus,textarea:focus,select:focus{
+  outline:none;border-color:var(--b);
+  box-shadow:0 0 0 3px rgba(42,95,158,.12);background:#fff;
+}
+textarea{resize:none;overflow:hidden;line-height:1.65;}
+/* items */
+.items{padding:0 24px 12px;}
+.ih{
+  display:grid;
+  grid-template-columns:42px 1fr 78px 112px 112px 28px;
+  gap:5px;background:var(--n);color:#fff;font-size:.75rem;font-weight:700;
+  letter-spacing:.4px;padding:9px 10px;border-radius:8px 8px 0 0;margin-top:13px;text-align:center;
+}
+.ih span:nth-child(2){text-align:left;}
+.ir{
+  display:grid;
+  grid-template-columns:42px 1fr 78px 112px 112px 28px;
+  gap:5px;padding:5px 10px;border-bottom:1px solid var(--gb);
+  align-items:center;background:#fff;
+}
+.ir:hover{background:#f0f5fc;}
+.ir input{padding:5px 7px;font-size:.84rem;text-align:right;}
+.ir .desc-in{text-align:left;}
+.seq{text-align:center;font-weight:600;color:var(--m);font-size:.81rem;}
+.amt-c{text-align:right;font-weight:600;color:var(--n);font-size:.84rem;padding:5px 7px;background:var(--pale);border-radius:5px;border:1.5px solid var(--gb);}
+.del-btn{background:none;border:none;cursor:pointer;color:#b03030;font-size:.88rem;padding:2px;opacity:0;transition:.1s;}
+.ir:hover .del-btn{opacity:1;}
+.add-wrap{padding:7px 10px;border-bottom:1.5px solid var(--gb);}
+.add-btn{background:none;border:1.5px dashed var(--b);color:var(--b);font-family:'Sarabun',sans-serif;font-size:.81rem;font-weight:600;cursor:pointer;padding:5px 13px;border-radius:7px;transition:.15s;display:inline-flex;align-items:center;gap:5px;}
+.add-btn:hover{background:var(--pale);color:var(--n);border-color:var(--n);}
+/* totals */
+.tots{display:grid;grid-template-columns:1fr auto;padding:0 24px;align-items:start;}
+.tw-wrap{padding:13px 0;}
+.tw-lbl{font-size:.72rem;font-weight:700;color:var(--n2);letter-spacing:.4px;margin-bottom:5px;}
+.tw-val{font-size:.89rem;font-weight:600;color:var(--n);padding:9px 12px;background:var(--pale);border-radius:7px;border:1.5px solid var(--gb);min-width:220px;line-height:1.5;}
+.tt{min-width:262px;padding:13px 0;}
+.tr{display:grid;grid-template-columns:1fr 124px;gap:5px;padding:4px 0;border-bottom:1px solid var(--gb);align-items:center;}
+.tl{font-size:.81rem;color:var(--m);text-align:right;padding-right:9px;}
+.tv{font-size:.89rem;font-weight:600;text-align:right;color:var(--n);}
+.tr input{text-align:right;font-size:.86rem;padding:4px 7px;}
+.grand-row{display:flex;justify-content:space-between;align-items:center;background:var(--n);border-radius:8px;padding:8px 12px;margin-top:5px;}
+.grand-row .tl{color:rgba(255,255,255,.85);font-weight:700;padding-right:0;}
+.grand-row .tv{color:var(--a);font-size:1.03rem;}
+/* remarks */
+.rm{padding:13px 24px;border-top:1.5px solid var(--gb);background:var(--pale);}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+/* signatures */
+.sigs{padding:17px 24px;border-top:1.5px solid var(--gb);display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.sb{padding:13px 17px;border:1.5px dashed var(--gb);border-radius:9px;background:var(--gl);text-align:center;}
+.sb-t{font-size:.77rem;font-weight:700;color:var(--n2);margin-bottom:9px;}
+.sline{height:1.5px;background:var(--gb);margin:4px 14px 8px;border-radius:2px;}
+.slbl{font-size:.78rem;color:var(--m);font-weight:600;line-height:1.9;}
+.sig-fields{display:flex;flex-direction:column;gap:5px;text-align:left;}
+.sig-flbl{font-size:.69rem;font-weight:700;color:var(--b);text-transform:uppercase;letter-spacing:.6px;}
+/* footer */
+.ft{background:var(--n);padding:10px 24px;text-align:center;font-size:.71rem;color:rgba(255,255,255,.4);}
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--n);color:#fff;padding:12px 20px;border-radius:10px;font-size:.87rem;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.3);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:9999;border-left:4px solid var(--a);max-width:340px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* ══════════════════════════════════════════
+   PRINT STYLES  ← ทำงานได้ทุก browser
+   กด Ctrl+P / Cmd+P หรือ window.print()
+   → เลือก "Save as PDF"
+══════════════════════════════════════════ */
+@media print{
+  /* Force color printing */
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+
+  /* ซ่อนส่วน UI ที่ไม่ต้องพิมพ์ */
+  .app-hdr,.bar,.add-wrap,.del-btn,.toast{display:none!important;}
+
+  /* รีเซ็ต layout */
+  html,body{
+    background:#fff!important;
+    margin:0!important;padding:0!important;
+    min-height:unset!important;
+  }
+  .wrap{max-width:100%!important;margin:0!important;}
+  .card{box-shadow:none!important;border-radius:0!important;}
+  .fa{padding:0!important;}
+  .doc{border:none!important;border-radius:0!important;}
+
+  /* Input → แสดงเป็น text ปกติ ไม่มีกรอบ */
+  input,select{
+    border:none!important;background:transparent!important;
+    padding:0!important;box-shadow:none!important;
+    -webkit-appearance:none;appearance:none;
+    font-size:inherit!important;color:#0d2b4e!important;
+    height:auto!important;
+  }
+  textarea{
+    border:none!important;background:transparent!important;
+    padding:0!important;box-shadow:none!important;
+    overflow:visible!important;height:auto!important;
+    font-size:inherit!important;color:#0d2b4e!important;
+  }
+
+  /* item rows — ซ่อน col ปุ่มลบ */
+  .ih,.ir{grid-template-columns:42px 1fr 78px 112px 112px!important;}
+
+  /* ห้ามตัดหน้ากลางตาราง */
+  .ir{page-break-inside:avoid;}
+  .sigs{page-break-inside:avoid;}
+
+  /* สีพื้นหลังต้องติดมาด้วย */
+  .dh{background:#0d2b4e!important;}
+  .meta{background:#e8f0fb!important;}
+  .rm{background:#e8f0fb!important;}
+  .grand-row{background:#0d2b4e!important;}
+  .amt-c{background:#e8f0fb!important;}
+  .sb{background:#f4f7fc!important;}
+  .inv-badge{background:rgba(255,255,255,.12)!important;}
+  .ft{background:#0d2b4e!important;}
+  .tw-val{background:#e8f0fb!important;}
+  .ih{background:#0d2b4e!important;}
+}
+@page{size:A4;margin:8mm 10mm;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="app-hdr">
+    <h1>ระบบออกใบแจ้งหนี้</h1>
+    <p>บริษัท ที ไอ พี อิมปอร์ทเอ็กซ์ปอร์ท จำกัด</p>
+  </div>
+  <div class="card">
+    <div class="bar">
+      <span class="bar-t">📄 แบบฟอร์มใบแจ้งหนี้ / ใบรับเงิน</span>
+      <div class="bar-btns">
+        <button class="btn btn-clear" onclick="clearForm()">↺ ล้างฟอร์ม</button>
+        <button class="btn btn-pdf" onclick="window.print()">🖨 บันทึก PDF</button>
+        <button class="btn btn-drive" onclick="window.open('https://drive.google.com/drive/u/0/folders/1P4lTvH15twVZ000GJVYgUur1rgwPoj_D','_blank')">☁ Google Drive</button>
+      </div>
+    </div>
+    <div class="fa">
+      <div class="doc" id="invoiceDoc">
+
+        <!-- header -->
+        <div class="dh">
+          <div>
+            <div class="co-name">บริษัท ที ไอ พี อิมปอร์ทเอ็กซ์ปอร์ท จำกัด</div>
+            <div class="co-info">
+              ที่ตั้ง 74/117 หมู่ที่ 17 ตำบลคลองหนึ่ง อำเภอคลองหลวง จังหวัดปทุมธานี 12120<br>
+              โทร: 02-101-2132, 093-650-8131 &nbsp;|&nbsp; เลขประจำตัวผู้เสียภาษี: 0135559002142 (สำนักงานใหญ่)
+            </div>
+          </div>
+          <div class="inv-badge">
+            <div class="inv-badge-text">ใบแจ้งหนี้<br>ใบรับเงิน</div>
+          </div>
+        </div>
+
+        <!-- meta -->
+        <div class="meta">
+          <div class="mf"><span class="ml">วันที่</span><input type="date" id="invoiceDate"></div>
+          <div class="mf"><span class="ml">อ้างอิง / PO</span><input type="text" id="reference" placeholder="เลขที่อ้างอิง"></div>
+        </div>
+
+        <!-- customer -->
+        <div class="cust">
+          <div class="fg"><span class="fl">ลูกค้า</span><input type="text" id="customerName" placeholder="ชื่อลูกค้า / บริษัท"></div>
+          <div class="fg"><span class="fl">เลขประจำตัวผู้เสียภาษี</span><input type="text" id="taxId" placeholder="0000000000000"></div>
+          <div class="fg span2"><span class="fl">ที่อยู่</span><textarea id="customerAddress" rows="2" placeholder="ที่อยู่ลูกค้า" oninput="autoH(this)"></textarea></div>
+        </div>
+
+        <!-- items -->
+        <div class="items">
+          <div class="ih">
+            <span>ลำดับ</span><span>รายการสินค้า / บริการ</span>
+            <span>จำนวน</span><span>ราคาต่อหน่วย</span><span>จำนวนเงิน</span><span></span>
+          </div>
+          <div id="rowsBody"></div>
+          <div class="add-wrap">
+            <button class="add-btn" onclick="addRow()">+ เพิ่มรายการสินค้า</button>
+          </div>
+        </div>
+
+        <!-- totals -->
+        <div class="tots">
+          <div class="tw-wrap">
+            <div class="tw-lbl">ราคารวมสุทธิ (ตัวอักษร)</div>
+            <div class="tw-val" id="tw">ศูนย์บาทถ้วน</div>
+          </div>
+          <div class="tt">
+            <div class="tr"><span class="tl">ราคารวม</span><span class="tv" id="ds">0.00</span></div>
+            <div class="tr"><span class="tl">หักเงินมัดจำ</span><input type="number" id="deposit" placeholder="0.00" min="0" step="0.01" oninput="calc()"></div>
+            <div class="tr"><span class="tl">คงเหลือ</span><span class="tv" id="dr">0.00</span></div>
+            <div class="tr"><span class="tl">ภาษีมูลค่าเพิ่ม 7%</span><span class="tv" id="dv">0.00</span></div>
+            <div class="grand-row"><span class="tl">ราคารวมสุทธิ</span><span class="tv" id="dg">0.00</span></div>
+          </div>
+        </div>
+
+        <!-- remarks -->
+        <div class="rm">
+          <div class="rg">
+            <div class="fg">
+              <span class="fl">หมายเหตุ</span>
+              <textarea id="remarks" rows="3" oninput="autoH(this)">ท่านสามารถชำระเงินผ่านบัญชีธนาคารกสิกรไทย
+เลขที่บัญชี 035-1-54125-3
+ชื่อบัญชี บจก.ที ไอ พี อิมปอร์ทเอ็กซ์ปอร์ท</textarea>
+            </div>
+            <div class="fg">
+              <span class="fl">เงื่อนไขการชำระ</span>
+              <select id="paymentTerm">
+                <option value="">-- เลือกเงื่อนไข --</option>
+                <option>ชำระทันที</option><option>7 วัน</option><option>15 วัน</option>
+                <option>30 วัน</option><option>45 วัน</option><option>60 วัน</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- signatures -->
+        <div class="sigs">
+          <!-- buyer static -->
+          <div class="sb">
+            <div class="sb-t">ผู้ซื้อ / ผู้รับสินค้าหรือผู้รับบริการ</div>
+            <div style="height:50px"></div>
+            <div class="sline"></div>
+            <div class="slbl">ลงชื่อ …………………………………………</div>
+            <div class="slbl">ผู้ซื้อ / ผู้รับสินค้าหรือผู้รับบริการ</div>
+            <div class="slbl">วันที่ ………………………………………</div>
+          </div>
+          <!-- maker editable -->
+          <div class="sb">
+            <div class="sb-t">✍️ ผู้จัดทำ</div>
+            <div class="sig-fields">
+              <span class="sig-flbl">ชื่อผู้จัดทำ</span>
+              <input type="text" id="makerName" placeholder="กรอกชื่อผู้จัดทำ">
+              <span class="sig-flbl">วันที่</span>
+              <input type="date" id="makerDate">
+            </div>
+            <div class="sline" style="margin-top:10px"></div>
+            <div class="slbl">ผู้จัดทำ</div>
+          </div>
+        </div>
+
+        <!-- footer -->
+        <div class="ft">
+          บริษัท ที ไอ พี อิมปอร์ทเอ็กซ์ปอร์ท จำกัด &nbsp;|&nbsp; เลขที่ภาษี 0135559002142 &nbsp;|&nbsp; โทร 02-101-2132
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var rows=[], rid=0;
+
+window.addEventListener('load',function(){
+  document.getElementById('invoiceDate').value=td();
+  document.getElementById('makerDate').value=td();
+  init(5);
+  document.querySelectorAll('textarea').forEach(autoH);
+});
+
+function td(){return new Date().toISOString().split('T')[0];}
+function autoH(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+function fmt(n){return n.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function init(n){
+  rows=[];rid=0;
+  for(var i=0;i<n;i++){rid++;rows.push({id:rid,d:'',q:'',p:'',a:'0.00'});}
+  render();
+}
+
+function save(){
+  rows.forEach(function(r){
+    var d=document.getElementById('d'+r.id),q=document.getElementById('q'+r.id),
+        p=document.getElementById('p'+r.id),a=document.getElementById('a'+r.id);
+    if(d)r.d=d.value; if(q)r.q=q.value;
+    if(p)r.p=p.value; if(a)r.a=a.textContent;
+  });
+}
+
+function addRow(){save();rid++;rows.push({id:rid,d:'',q:'',p:'',a:'0.00'});render();}
+function delRow(id){save();rows=rows.filter(function(r){return r.id!==id;});render();calc();}
+
+function render(){
+  var h='';
+  rows.forEach(function(r,i){
+    var de=(r.d||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+    h+='<div class="ir" id="R'+r.id+'">'
+      +'<span class="seq">'+(i+1)+'</span>'
+      +'<input class="desc-in" type="text" placeholder="รายการสินค้า / บริการ" id="d'+r.id+'" value="'+de+'">'
+      +'<input type="number" placeholder="0" min="0" step="1" id="q'+r.id+'" value="'+(r.q||'')+'" oninput="ri('+r.id+')">'
+      +'<input type="number" placeholder="0.00" min="0" step="0.01" id="p'+r.id+'" value="'+(r.p||'')+'" oninput="ri('+r.id+')">'
+      +'<div class="amt-c" id="a'+r.id+'">'+(r.a||'0.00')+'</div>'
+      +'<button class="del-btn" onclick="delRow('+r.id+')" title="ลบ">✕</button>'
+      +'</div>';
+  });
+  document.getElementById('rowsBody').innerHTML=h;
+}
+
+function ri(id){
+  var q=parseFloat(document.getElementById('q'+id).value)||0;
+  var p=parseFloat(document.getElementById('p'+id).value)||0;
+  var a=document.getElementById('a'+id);
+  if(a)a.textContent=fmt(q*p);
+  var r=rows.find(function(x){return x.id===id;});
+  if(r){r.q=document.getElementById('q'+id).value;r.p=document.getElementById('p'+id).value;r.a=fmt(q*p);}
+  calc();
+}
+
+function calc(){
+  var sub=0;
+  rows.forEach(function(r){
+    var q=parseFloat((document.getElementById('q'+r.id)||{}).value)||0;
+    var p=parseFloat((document.getElementById('p'+r.id)||{}).value)||0;
+    sub+=q*p;
+  });
+  var dep=parseFloat(document.getElementById('deposit').value)||0;
+  var rem=sub-dep,vat=rem*.07,gr=rem+vat;
+  document.getElementById('ds').textContent=fmt(sub);
+  document.getElementById('dr').textContent=fmt(rem);
+  document.getElementById('dv').textContent=fmt(vat);
+  document.getElementById('dg').textContent=fmt(gr);
+  document.getElementById('tw').textContent=baht(gr);
+}
+
+function baht(n){
+  n=Math.round(n*100)/100;
+  if(n<=0)return'ศูนย์บาทถ้วน';
+  var o=['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
+  function g(x){
+    if(!x)return'';
+    var s='',d=String(x).padStart(6,'0').split('').map(Number),l=['แสน','หมื่น','พัน','ร้อย','สิบ',''];
+    d.forEach(function(v,i){
+      if(!v)return;
+      if(l[i]==='สิบ'){if(v===1)s+='สิบ';else if(v===2)s+='ยี่สิบ';else s+=o[v]+'สิบ';}
+      else if(!l[i]){s+=(d[4]>0&&v===1)?'เอ็ด':o[v];}
+      else s+=o[v]+l[i];
+    });
+    return s;
+  }
+  var ip=Math.floor(n),dp=Math.round((n-ip)*100),res='';
+  if(ip>=1e6){res+=g(Math.floor(ip/1e6))+'ล้าน';var rm=ip%1e6;if(rm)res+=g(rm);}
+  else if(ip)res+=g(ip);
+  res+='บาท';
+  res+=(dp===0)?'ถ้วน':g(dp)+'สตางค์';
+  return res;
+}
+
+function clearForm(){
+  if(!confirm('ต้องการล้างข้อมูลทั้งหมดหรือไม่?'))return;
+  ['customerName','customerAddress','taxId','reference','deposit','makerName'].forEach(function(id){
+    var e=document.getElementById(id);if(e)e.value='';
+  });
+  document.getElementById('invoiceDate').value=td();
+  document.getElementById('makerDate').value=td();
+  document.getElementById('paymentTerm').value='';
+  document.getElementById('remarks').value='ท่านสามารถชำระเงินผ่านบัญชีธนาคารกสิกรไทย\nเลขที่บัญชี 035-1-54125-3\nชื่อบัญชี บจก.ที ไอ พี อิมปอร์ทเอ็กซ์ปอร์ท';
+  init(5);calc();
+  document.querySelectorAll('textarea').forEach(autoH);
+  toast('ล้างฟอร์มเรียบร้อยแล้ว');
+}
+
+function toast(msg,dur){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);
+  t._t=setTimeout(function(){t.classList.remove('show');},dur||3500);
+}
+</script>
+</body>
+</html>
